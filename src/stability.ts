@@ -9,7 +9,9 @@ import { createJudge } from './judge.ts';
 import type { RunResult } from './types.ts';
 
 async function main(): Promise<void> {
-  const input = resolve(process.argv[process.argv.indexOf('--input') + 1] ?? 'reports/latest.json');
+  // 不写 argv[idx(--input)+1]:没传参时 indexOf=-1 会取到 argv[0](node.exe 本体),读出 PE 头
+  const flagIdx = process.argv.indexOf('--input');
+  const input = resolve(flagIdx >= 0 && process.argv[flagIdx + 1] !== undefined ? process.argv[flagIdx + 1] : 'reports/latest.json');
   const run = JSON.parse(readFileSync(input, 'utf-8')) as RunResult;
   if (run.meta.judgeImpl !== 'real') {
     console.error('[stability] 最近一次运行不是 real judge,对比无意义(桩是确定性的)'); process.exitCode = 1; return;

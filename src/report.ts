@@ -57,7 +57,7 @@ export function renderReport(run: RunResult, tag = ''): string {
     `| judge | ${meta.judgeImpl} · ${meta.judgeModel}(调用 ${meta.judgeCalls} 次) |`,
     `| 门禁阈值 | 规则通过率 ≥ ${meta.thresholds.rulePassRate} 且 judge 均分 ≥ ${meta.thresholds.judgeAvg} |`,
     '', '## 总览', '',
-    `- **门禁判定:${verdict}**`,
+    `- 门禁判定:${verdict}`,
     `- 用例:${summary.total} 条 = 通过 ${summary.pass} + 规则失败 ${summary.fail} + 基础设施错误 ${summary.error}`,
     `- 规则通过率:**${fmtRate(summary.rulePassRate)}**(error 不计入分母)`,
     `- judge 均分:${summary.judgeAvg !== null ? `**${summary.judgeAvg.toFixed(2)} / 5**(${judged(results)} 条进 judge)` : '(无)'};分布:${scoreHistogram(summary.judgeScores)}`,

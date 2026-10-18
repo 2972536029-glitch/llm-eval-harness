@@ -21,6 +21,8 @@ function spawnAdapter(cmd: string[], question: string, timeoutMs: number): Promi
     child.stderr.setEncoding('utf-8');
     child.stdout.on('data', (d: string) => { stdout += d; });
     child.stderr.on('data', (d: string) => { stderr += d; });
+    // 超时强杀后管道可能以 EPIPE 报错;无监听的 error 事件会炸掉整个 runner,吞掉即可(结果以 exit code 为准)
+    child.stdin.on('error', () => {});
     child.on('error', err => {
       clearTimeout(timer);
       resolve({ code: -1, stdout, stderr: `${stderr}${err.message}`, timedOut });

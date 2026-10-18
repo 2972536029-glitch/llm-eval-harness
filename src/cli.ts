@@ -1,6 +1,6 @@
 /** CLI 入口:npm run eval [-- --judge stub --cases cases --adapter adapters/xxx.mjs]
  * 退出码即 CI 信号:门禁不过 = 非 0,人不用盯报告,红了再看。 */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadCases } from './cases.ts';
 import { createJudge } from './judge.ts';
@@ -33,8 +33,15 @@ async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const casesDir = resolve(args.cases);
   const cases = loadCases(casesDir);
+  const adapterPath = resolve(args.adapter);
+  if (!existsSync(adapterPath)) {
+    // 适配器路径错了就快速失败:别让 12 条 case 各自 spawn 失败两轮再得出 12 份同因 error
+    console.error(`[eval] 适配器不存在:${adapterPath}`);
+    process.exitCode = 1;
+    return;
+  }
   const judge = createJudge(args.judge);
-  const adapterCmd = ['node', resolve(args.adapter)];
+  const adapterCmd = ['node', adapterPath];
 
   console.error(`[eval] ${cases.length} 条用例 · judge=${judge.impl} · 适配器=${adapterCmd[1]}`);
   const run = await runPipeline({
