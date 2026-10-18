@@ -1,0 +1,21 @@
+{
+  "name": "llm-eval-harness",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "通用 LLM 输出评测管线:规则断言 + LLM-as-judge,markdown 报告 + CI 退出码",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "eval": "tsx src/cli.ts",
+    "stability": "tsx src/stability.ts",
+    "e2e": "tsx qa/e2e.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.23.0",
+    "typescript": "^5.9.0"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "rabbitmq",
+  "question": "RabbitMQ 消息队列哪次学的?",
+  "expectSessions": [16],
+  "ruleAssertions": [
+    { "type": "regex", "pattern": "依据[:：]", "name": "has_citation_line" },
+    { "type": "regex", "pattern": "Rabbit\\s?MQ", "name": "mentions_topic" },
+    { "type": "len_range", "min": 30, "max": 1500 },
+    { "type": "not_contains", "value": "作为AI", "name": "no_meta_disclaimer" }
+  ]
+}

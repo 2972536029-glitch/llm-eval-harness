@@ -1,0 +1,11 @@
+{
+  "id": "helm-kustomize",
+  "question": "Helm 和 Kustomize 我哪次课学的?",
+  "expectSessions": [12],
+  "ruleAssertions": [
+    { "type": "regex", "pattern": "依据[:：]", "name": "has_citation_line" },
+    { "type": "regex", "pattern": "[Hh]elm", "name": "mentions_topic" },
+    { "type": "len_range", "min": 30, "max": 1500 },
+    { "type": "not_contains", "value": "作为AI", "name": "no_meta_disclaimer" }
+  ]
+}

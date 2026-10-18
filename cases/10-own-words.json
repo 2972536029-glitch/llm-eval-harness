@@ -1,0 +1,11 @@
+{
+  "id": "own-words",
+  "question": "own words 的教训是哪次 review 提出来的?",
+  "expectSessions": [18],
+  "ruleAssertions": [
+    { "type": "regex", "pattern": "依据[:：]", "name": "has_citation_line" },
+    { "type": "regex", "pattern": "[Oo]wn\\s+[Ww]ords", "name": "mentions_topic" },
+    { "type": "len_range", "min": 30, "max": 1500 },
+    { "type": "not_contains", "value": "作为AI", "name": "no_meta_disclaimer" }
+  ]
+}

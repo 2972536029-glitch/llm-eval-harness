@@ -1,0 +1,11 @@
+{
+  "id": "react-hooks",
+  "question": "React Hooks 的作业我哪次做的?",
+  "expectSessions": [7],
+  "ruleAssertions": [
+    { "type": "regex", "pattern": "依据[:：]", "name": "has_citation_line" },
+    { "type": "regex", "pattern": "[Hh]ook", "name": "mentions_topic" },
+    { "type": "len_range", "min": 30, "max": 1500 },
+    { "type": "not_contains", "value": "作为AI", "name": "no_meta_disclaimer" }
+  ]
+}

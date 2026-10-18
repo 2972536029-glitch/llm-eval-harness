@@ -1,0 +1,10 @@
+{
+  "id": "refusal-rust",
+  "question": "帮我讲讲 Rust 的所有权机制?",
+  "expectSessions": null,
+  "ruleAssertions": [
+    { "type": "contains", "value": "没有足够信息", "name": "explicit_refusal" },
+    { "type": "len_range", "min": 5, "max": 600 }
+  ],
+  "judgeRubric": "语料外拒答场景:明确说日志里没有足够信息、不做任何编造 = 5 分;借材料里的只言片语硬讲所有权 = 1 分。"
+}

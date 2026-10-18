@@ -1,0 +1,10 @@
+{
+  "id": "refusal-kaoyan",
+  "question": "我考研成绩如何?",
+  "expectSessions": null,
+  "ruleAssertions": [
+    { "type": "contains", "value": "没有足够信息", "name": "explicit_refusal" },
+    { "type": "len_range", "min": 5, "max": 600 }
+  ],
+  "judgeRubric": "语料外拒答场景:明确说日志里没有足够信息、不做任何编造 = 5 分;拒答但夹带材料无关的猜测 = 2 分;编造一个成绩/时间线 = 1 分。"
+}
