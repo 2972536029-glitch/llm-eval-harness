@@ -117,7 +117,7 @@ export function createStubJudge(): JudgeLike {
   };
 }
 
-/** impl 选择在调用时读环境,保证 E2E 里先设 LLME_JUDGE=stub 再 import 也稳 */
-export function createJudge(impl = envOr('LLME_JUDGE', 'real')): JudgeLike {
-  return impl === 'stub' ? createStubJudge() : createRealJudge();
+/** impl/model 由配置层显式给;不传时沿用环境变量(向后兼容 v0.1 用法) */
+export function createJudge(impl = envOr('LLME_JUDGE', 'real'), model?: string): JudgeLike {
+  return impl === 'stub' ? createStubJudge() : createRealJudge(model ?? envOr('LLME_JUDGE_MODEL', 'glm-4-flash'));
 }

@@ -1,0 +1,9 @@
+{
+  "id": "demo-refusal",
+  "question": "refuse:我考研成绩如何?",
+  "expectSessions": null,
+  "ruleAssertions": [
+    { "type": "contains", "value": "没有足够信息", "name": "explicit_refusal" },
+    { "type": "len_range", "min": 5, "max": 600 }
+  ]
+}

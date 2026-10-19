@@ -1,0 +1,9 @@
+{
+  "id": "demo-citation-fail",
+  "question": "wrong:React Hooks 的作业我哪次做的?",
+  "expectSessions": [12],
+  "ruleAssertions": [
+    { "type": "regex", "pattern": "依据[:：]", "name": "has_citation_line" },
+    { "type": "len_range", "min": 30, "max": 1500 }
+  ]
+}

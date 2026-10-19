@@ -3,7 +3,10 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { CaseFile, RuleAssertion } from './types.ts';
 
-const RULE_TYPES = ['contains', 'not_contains', 'regex', 'len_range', 'json_valid'] as const;
+const RULE_TYPES = [
+  'contains', 'not_contains', 'contains_any', 'contains_all',
+  'regex', 'not_regex', 'starts_with', 'ends_with', 'equals', 'len_range', 'json_valid',
+] as const;
 
 function validateAssertion(a: unknown, file: string, idx: number): RuleAssertion {
   if (typeof a !== 'object' || a === null) throw bad(file, `第 ${idx} 条断言不是对象`);
@@ -11,13 +14,18 @@ function validateAssertion(a: unknown, file: string, idx: number): RuleAssertion
   if (typeof r.type !== 'string' || !(RULE_TYPES as readonly string[]).includes(r.type)) {
     throw bad(file, `第 ${idx} 条断言 type 非法:${String(r.type)},合法值 ${RULE_TYPES.join('/')}`);
   }
-  if (r.type === 'contains' || r.type === 'not_contains') {
+  if (r.type === 'contains' || r.type === 'not_contains' || r.type === 'starts_with' || r.type === 'ends_with' || r.type === 'equals') {
     if (typeof r.value !== 'string' || r.value.length === 0) throw bad(file, `第 ${idx} 条(${r.type})缺少非空 value`);
   }
-  if (r.type === 'regex') {
-    if (typeof r.pattern !== 'string' || r.pattern.length === 0) throw bad(file, `第 ${idx} 条(regex)缺少 pattern`);
+  if (r.type === 'contains_any' || r.type === 'contains_all') {
+    if (!Array.isArray(r.values) || r.values.length === 0 || !r.values.every(v => typeof v === 'string' && v.length > 0)) {
+      throw bad(file, `第 ${idx} 条(${r.type})values 应为非空字符串数组`);
+    }
+  }
+  if (r.type === 'regex' || r.type === 'not_regex') {
+    if (typeof r.pattern !== 'string' || r.pattern.length === 0) throw bad(file, `第 ${idx} 条(${r.type})缺少 pattern`);
     try { void new RegExp(r.pattern, typeof r.flags === 'string' ? r.flags : ''); }
-    catch (e) { throw bad(file, `第 ${idx} 条(regex)pattern 编译失败:${e instanceof Error ? e.message : e}`); }
+    catch (e) { throw bad(file, `第 ${idx} 条(${r.type})pattern 编译失败:${e instanceof Error ? e.message : e}`); }
   }
   if (r.type === 'len_range') {
     const { min, max } = r as { min?: unknown; max?: unknown };

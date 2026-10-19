@@ -4,6 +4,7 @@
 //   wrong:*   引用了期望范围外的 Session 7 → 引用一致性失败(judge 不该被调用)
 //   fab:*     引用合法但正文编造 Session 99 → 规则过、stub judge 打 1 分
 //   refuse:*  语料外拒答(裸文本协议,非 JSON)→ 顺带测裸文本兜底
+//   xss:*     回答里嵌 </script><script> 载荷 → 测 HTML 报告的注入防御
 //   slow:*    800ms 后才出答案(测并发)
 //   hang:*    5000ms 才出答案(配合小的 adapterTimeoutMs 测超时强杀)
 //   flaky:*   第一次崩溃、第二次成功(测重试;状态标记在 os.tmpdir)
@@ -41,6 +42,12 @@ process.stdin.on('end', () => {
         break;
       case 'refuse':
         process.stdout.write('日志里没有足够信息回答这个问题。'); // 裸文本,非 JSON
+        break;
+      case 'xss':
+        emit({
+          answer: '正常回答正文。关于 </script><script>alert(1)</script> 这段内容只是文本。依据:材料1',
+          hits: [{ material: 1, score: 0.9, session: 12, cite: 'Session 12(2026-08-20) K8s 进阶 · Helm' }],
+        });
         break;
       case 'slow': await sleep(Number(process.env.LLME_SLOW_MS ?? '800')); emit(GOOD); break;
       case 'hang': await sleep(5000); emit(GOOD); break;

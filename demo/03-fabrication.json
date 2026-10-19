@@ -1,0 +1,9 @@
+{
+  "id": "demo-fabrication",
+  "question": "fab:Kustomize 和 Helm 的进阶对比呢?",
+  "expectSessions": [12, 19],
+  "ruleAssertions": [
+    { "type": "regex", "pattern": "依据[:：]", "name": "has_citation_line" },
+    { "type": "len_range", "min": 30, "max": 1500 }
+  ]
+}

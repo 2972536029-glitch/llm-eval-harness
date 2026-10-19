@@ -15,11 +15,37 @@ export function runRule(rule: RuleAssertion, answer: string): RuleResult {
     case 'not_contains':
       return result(name, rule.type, !answer.includes(rule.value),
         !answer.includes(rule.value) ? `未出现 "${rule.value}"` : `出现了禁止词 "${rule.value}"`);
+    case 'contains_any': {
+      const hit = rule.values.filter(v => answer.includes(v));
+      return result(name, rule.type, hit.length > 0,
+        hit.length > 0 ? `命中任一:${hit.map(v => `"${v}"`).join('、')}` : `以下均未出现:${rule.values.join('、')}`);
+    }
+    case 'contains_all': {
+      const miss = rule.values.filter(v => !answer.includes(v));
+      return result(name, rule.type, miss.length === 0,
+        miss.length === 0 ? `全部包含(${rule.values.length} 项)` : `缺少:${miss.map(v => `"${v}"`).join('、')}`);
+    }
+    case 'starts_with':
+      return result(name, rule.type, answer.trimStart().startsWith(rule.value),
+        answer.trimStart().startsWith(rule.value) ? `以 "${rule.value}" 开头` : `不以 "${rule.value}" 开头`);
+    case 'ends_with':
+      return result(name, rule.type, answer.trimEnd().endsWith(rule.value),
+        answer.trimEnd().endsWith(rule.value) ? `以 "${rule.value}" 结尾` : `不以 "${rule.value}" 结尾`);
+    case 'equals':
+      return result(name, rule.type, answer.trim() === rule.value,
+        answer.trim() === rule.value ? '完全相等' : '与期望文本不相等');
     case 'regex': {
       let re: RegExp;
       try { re = new RegExp(rule.pattern, rule.flags ?? ''); }
       catch (e) { return result(name, rule.type, false, `regex 配置错误:${e instanceof Error ? e.message : e}`); }
       return result(name, rule.type, re.test(answer), re.test(answer) ? `匹配 /${rule.pattern}/` : `不匹配 /${rule.pattern}/`);
+    }
+    case 'not_regex': {
+      let re: RegExp;
+      try { re = new RegExp(rule.pattern, rule.flags ?? ''); }
+      catch (e) { return result(name, rule.type, false, `regex 配置错误:${e instanceof Error ? e.message : e}`); }
+      const hit = re.test(answer);
+      return result(name, rule.type, !hit, !hit ? `未匹配 /${rule.pattern}/(正确)` : `匹配到了禁止模式 /${rule.pattern}/`);
     }
     case 'len_range': {
       const len = answer.trim().length;
@@ -27,8 +53,7 @@ export function runRule(rule: RuleAssertion, answer: string): RuleResult {
       const max = rule.max ?? Infinity;
       const pass = len >= min && len <= max;
       return result(name, rule.type, pass, `长度 ${len}(要求 ${min === 0 ? '' : min}..${max === Infinity ? '∞' : max})`);
-    }
-    case 'json_valid': {
+    }    case 'json_valid': {
       const text = stripJsonFence(answer);
       try { void JSON.parse(text); return result(name, rule.type, true, '可解析为 JSON'); }
       catch (e) { return result(name, rule.type, false, `不是合法 JSON:${e instanceof Error ? e.message : e}(已尝试剥离代码围栏)`); }

@@ -2,6 +2,7 @@ node_modules/
 .env
 *.log
 reports/
+reports-demo/
 .ai/
 .claude/
 .zcode/

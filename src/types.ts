@@ -4,7 +4,13 @@
 export type RuleAssertion =
   | { type: 'contains'; value: string; name?: string }
   | { type: 'not_contains'; value: string; name?: string }
+  | { type: 'contains_any'; values: string[]; name?: string }
+  | { type: 'contains_all'; values: string[]; name?: string }
   | { type: 'regex'; pattern: string; flags?: string; name?: string }
+  | { type: 'not_regex'; pattern: string; flags?: string; name?: string }
+  | { type: 'starts_with'; value: string; name?: string }
+  | { type: 'ends_with'; value: string; name?: string }
+  | { type: 'equals'; value: string; name?: string }
   | { type: 'len_range'; min?: number; max?: number; name?: string }
   | { type: 'json_valid'; name?: string };
 
@@ -44,12 +50,14 @@ export interface RuleResult {
 }
 
 export interface JudgeVerdict {
-  score: number; // 1-5 整数
+  score: number; // 1-5 整数(多采样时为中位数聚合结果)
   reasons: string;
   promptTokens: number;
   completionTokens: number;
   latencyMs: number;
   impl: string; // 'real' | 'stub'
+  /** 多采样(--judge-samples > 1)时记录每次原始分,报告展示;单采样不设 */
+  samples?: number[];
 }
 
 /** judge 的可替换接口:real(GLM)与 stub(E2E 桩)都实现它 */
@@ -69,8 +77,10 @@ export interface CaseResult {
   /** pass/fail 只由规则决定;judge 是附加指标,不改变 case 状态 */
   status: CaseStatus;
   adapterLatencyMs: number;
-  /** 适配器实际执行次数(含重试) */
+  /** 适配器实际执行次数(含重试);命中缓存的复用运行为 0 */
   attempts: number;
+  /** 本次结果是否来自答案缓存(--reuse)而非真实调用 */
+  reused: boolean;
   adapterError: string | null;
   /** 被测系统回答的字符数(成本估算的原料) */
   answerChars: number;
@@ -101,6 +111,11 @@ export interface RunMeta {
   adapterCalls: number;
   judgeCalls: number;
   thresholds: { rulePassRate: number; judgeAvg: number };
+  /** --only/--filter 只跑了子集时为 true(报告会标注,历史对比只算重叠 case) */
+  partial: boolean;
+  judgeSamples: number;
+  /** 命中答案缓存的 case 数 */
+  reusedCount: number;
 }
 
 export interface CostEstimate {

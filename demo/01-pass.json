@@ -1,0 +1,10 @@
+{
+  "id": "demo-pass",
+  "question": "ok:Helm 和 Kustomize 我哪次课学的?",
+  "expectSessions": [12, 19],
+  "ruleAssertions": [
+    { "type": "regex", "pattern": "依据[:：]", "name": "has_citation_line" },
+    { "type": "regex", "pattern": "[Hh]elm", "name": "mentions_topic" },
+    { "type": "len_range", "min": 30, "max": 1500 }
+  ]
+}
