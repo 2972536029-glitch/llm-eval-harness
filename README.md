@@ -41,17 +41,16 @@ npm run typecheck           # tsc --noEmit
 | 门禁控制 | 退出码 / `--no-gate` | 默认门禁拦截(CI 用);本地探索加 `--no-gate` 只看报告 |
 | 适配器协议 | [docs/adapters.md](docs/adapters.md) | stdin 进问题 → stdout 出 JSON;零侵入接任意系统;含模板 |
 
-## 评测结论(2026-10-19 v0.2 验收)
+## 评测结论(2026-10-19 评测驱动修复闭环后)
 
 | 指标 | 数字 |
 |---|---|
-| 规则通过率 | 10/12 = 83.3%(阈值 ≥80%) |
-| judge 均分 | 5.00 / 5(阈值 ≥4.0) |
-| judge 幂等性 | 20 次复评 0 漂移(v0.1 实测,v0.2 judge 未动) |
-| 回归对比 | 与 v0.1 首轮:回归 0 · 修复 0 · 分数变化 0(重叠 12) |
-| --reuse 增效 | 12 条全复用,被测系统零调用,单轮成本 0.0104 → 0.0084 元 |
+| 规则通过率 | **12/12 = 100%**(阈值 ≥80%;v0.1 首轮为 83.3%) |
+| judge 均分 | **5.00 / 5**(阈值 ≥4.0) |
+| judge 幂等性 | 20 次复评 0 漂移 |
+| 回归对比 | 修复 2(playwright/docker 生成退化)· 示例泄漏 1(judge 抓出后二修)· 回归 0 |
 
-**评测抓到的真缺陷(未回修,属被测对象)**:playwright / docker 两题检索全对(Session 14/10、引用一致),但生成端退化成只吐日期(18~26 字符)——`mentions_topic` + `len_range` 两条免费规则抓住,一分钱没花。完整明细见 [docs/report-v0.2.md](docs/report-v0.2.md)(v0.1 首轮存档:[docs/report-final.md](docs/report-final.md))。
+**评测驱动修复闭环(完整故事见 [docs/report-sut-fix.md](docs/report-sut-fix.md))**:v0.1 首轮抓到 playwright/docker 两题「检索全对、生成退化成只吐日期」→ 被测系统加 prompt 规则修复 → 12/12 但 judge 抓出修复引入的示例泄漏(主题词被替换,规则断言看不见)→ 示例抽象化二修 → 满分收官。SUT 侧两个 commit:learning-log-qa `0cca785` + `2282559`。历史存档:[docs/report-final.md](docs/report-final.md)(v0.1 首轮)、[docs/report-v0.2.md](docs/report-v0.2.md)(v0.2 验收)。
 
 ## 设计决策(面试防守要点)
 
