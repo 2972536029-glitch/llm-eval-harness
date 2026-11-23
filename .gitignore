@@ -7,3 +7,6 @@ reports-demo/
 .claude/
 .zcode/
 .DS_Store
+
+# local only: AI task brief
+/任务说明.md
